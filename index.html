@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>星海引路人 - ME部门招新游戏</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        // 配置Tailwind自定义颜色
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#89A707',
+                        secondary: '#FFCA00',
+                        neutral: '#E4EAE7',
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+        }
+    </style>
+</head>
+<body class="bg-white font-sans text-gray-800">
+    <div id="game-container" class="max-w-md mx-4 mx-auto bg-white p-6 rounded-xl shadow-lg mt-4 mb-8">
+        <!-- 标题页 -->
+        <div id="title-screen" class="text-center py-6">
+            <div class="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fa fa-star text-white text-3xl"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">星海引路人</h1>
+            <p class="text-gray-600 mb-8">ME关爱教育部门招新互动游戏</p>
+            <button id="start-btn" class="bg-primary hover:bg-primary/90 text-white font-medium py-3 px-8 rounded-lg transition duration-300 transform hover:scale-105">
+                开始游戏 <i class="fa fa-arrow-right ml-2 text-white"></i>
+            </button>
+        </div>
+
+        <!-- 游戏主界面 -->
+        <div id="game-screen" class="hidden rounded-lg p-4">
+            <div class="mb-4 pb-4 border-b border-primary/20">
+                <div class="flex items-center text-sm text-gray-500 mb-2">
+                    <i class="fa fa-map-marker mr-2"></i>
+                    <span id="progress-indicator">当前进度</span>
+                </div>
+                <div id="scene-container" class="text-lg leading-relaxed"></div>
+            </div>
+            <div id="choices-container" class="space-y-3"></div>
+        </div>
+
+        <!-- 结局页 -->
+        <div id="ending-screen" class="hidden">
+            <div class="text-center mb-6">
+                <h2 id="ending-title" class="text-2xl font-bold mb-4"></h2>
+                <p id="ending-desc" class="text-gray-700 mb-6 leading-relaxed"></p>
+                <p id="ending-relation" class="font-semibold text-primary mb-6"></p>
+            </div>
+
+            <!-- 招新说明部分 -->
+            <div class="bg-neutral p-5 rounded-lg mb-6">
+                <h3 class="text-xl font-bold text-primary mb-3">关于 ME 关爱教育部门</h3>
+                <p class="text-gray-700 mb-3">
+                    我们关注偏远地区、少数群体、社会边缘群体的教育发展和身心健康，致力于改善社会资源不均的现状。通过线上陪伴指导（如蓝信封、太阳语、星云计划等）和线下支教，让更多孩子感受到教育与陪伴的力量。
+                </p>
+                <p class="text-gray-700 italic mb-4">
+                    "我们相信：用一棵树摇动另一棵树，用一朵云推动另一朵云，用一个灵魂唤醒另一个灵魂。"
+                </p>
+                <p class="text-primary font-bold mb-4">期待你的加入！</p>
+
+                <!-- 招新推送链接按钮 -->
+                <a href="https://example.com/me-recruitment" target="_blank" class="inline-block bg-primary hover:bg-primary/90 text-white font-medium py-2 px-6 rounded-lg transition duration-300 transform hover:scale-105">
+                    <i class="fa fa-link mr-2"></i> 查看招新详情
+                </a>
+            </div>
+
+            <button id="restart-btn" class="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 px-4 rounded-lg transition duration-300">
+                <i class="fa fa-refresh mr-2"></i> 重新开始
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- 游戏核心逻辑 ---
+        const gameData = {
+            scenes: {
+                start: {
+                    text: "你是一名新晋志愿者，代号“引路人-9”。请选择你将参与的项目：",
+                    choices: [
+                        { text: "【星云计划】民族文化与自然探索", next: "nebula_1", path: "A" },
+                        { text: "【蓝信封】书信陪伴留守儿童", next: "blueletter_1", path: "B" },
+                        { text: "【太阳语】罕见病儿童辅导与陪伴", next: "sunshine_1", path: "C" }
+                    ]
+                },
+                nebula_1: {
+                    text: "你的学生小依对民族文化很感兴趣，但她的父母希望她把更多时间用在数学上。",
+                    choices: [
+                        { text: "坚持文化课程，设计“民族故事+数学”项目。", next: "nebula_2", path: "A1" },
+                        { text: "先转向数学辅导，再寻找结合点。", next: "nebula_3", path: "A2" }
+                    ]
+                },
+                nebula_2: {
+                    text: "项目进展顺利，但父母认为是“不务正业”，要求暂停。",
+                    choices: [
+                        { text: "据理力争，展示项目对综合能力的提升。", next: "ending_A_success", path: "A1a" },
+                        { text: "寻求折中，改为每周一次的兴趣拓展。", next: "ending_A_compromise", path: "A1b" }
+                    ]
+                },
+                nebula_3: {
+                    text: "你帮小依补了几周数学，她成绩有所提升，但对课程的热情不高。",
+                    choices: [
+                        { text: "继续强化数学，并尝试在题目中融入文化元素。", next: "ending_good_teacher", path: "A2a" },
+                        { text: "尊重她的兴趣，和家长沟通恢复文化课程。", next: "ending_missed_opportunity", path: "A2b" }
+                    ]
+                },
+                blueletter_1: {
+                    text: "通信伙伴阿木在信中提到他很迷茫，觉得读书没有用。",
+                    choices: [
+                        { text: "分享你的大学生活与困惑，告诉他探索的价值。", next: "blueletter_2", path: "B1" },
+                        { text: "提供实际建议，鼓励他探索职业方向。", next: "blueletter_3", path: "B2" }
+                    ]
+                },
+                blueletter_2: {
+                    text: "阿木回信说你的分享让他很受触动，但家里希望他早点打工补贴家用。",
+                    choices: [
+                        { text: "鼓励他坚持学业，强调长期价值。", next: "ending_B_success", path: "B1a" },
+                        { text: "理解他的家庭压力，探讨半工半读等可能性。", next: "ending_B_bittersweet", path: "B1b" }
+                    ]
+                },
+                blueletter_3: {
+                    text: "阿木采纳了你的建议，但在后续信件中，他提到自己感到孤独。",
+                    choices: [
+                        { text: "增加通信频率，更多地倾听和陪伴他。", next: "ending_B_success", path: "B2a" },
+                        { text: "建议他多和身边的朋友、老师沟通。", next: "ending_good_teacher", path: "B2b" }
+                    ]
+                },
+                sunshine_1: {
+                    text: "学生小远因身体原因频繁请假，跟不上进度，感到非常沮丧。",
+                    choices: [
+                        { text: "调整目标，从建立自信入手，学习他感兴趣的内容。", next: "sunshine_2", path: "C1" },
+                        { text: "提供情感支持，倾听他的感受并鼓励他接纳自己。", next: "sunshine_3", path: "C2" }
+                    ]
+                },
+                sunshine_2: {
+                    text: "小远在你的鼓励下，完成了一个他一直想做的小项目，重拾了自信。",
+                    choices: [
+                        { text: "将此作为新起点，设定更多他能完成的小目标。", next: "ending_good_teacher", path: "C1a" },
+                        { text: "和他一起探索新的兴趣领域，保持学习的新鲜感。", next: "ending_A_success", path: "C1b" }
+                    ]
+                },
+                sunshine_3: {
+                    text: "小远向你敞开心扉，你也分享了如何调整心态面对困难。",
+                    choices: [
+                        { text: "推荐一些适合他的线上学习资源，帮助他自学。", next: "ending_independent_learner", path: "C2a" },
+                        { text: "与项目组沟通，为他提供更灵活的辅导安排。", next: "ending_good_teacher", path: "C2b" }
+                    ]
+                },
+                ending_A_success: {
+                    isEnding: true,
+                    title: "【结局A：星尘之种】",
+                    desc: "你成功地在孩子心中种下了文化的种子，让她在学习中找到了自信与乐趣。你用行动证明了教育不仅是知识的传递，更是心灵的滋养。",
+                    relation: "对应项目：【星云计划】"
+                },
+                ending_A_compromise: {
+                    isEnding: true,
+                    title: "【普通结局：折中的守护】",
+                    desc: "你守护了孩子的兴趣，虽然过程曲折，但你展现了强大的沟通能力和耐心。教育有时需要循序渐进，在妥协中寻找前进的空间。",
+                    relation: "对应项目：【星云计划】"
+                },
+                ending_B_success: {
+                    isEnding: true,
+                    title: "【结局B：蓝信封的回信】",
+                    desc: "你的陪伴成为了孩子生命中一束温暖的光，他在你的鼓励下找到了继续前行的勇气。最后一封信里，他画了一幅星星的画，说那是你。",
+                    relation: "对应项目：【蓝信封书信陪伴】"
+                },
+                ending_B_bittersweet: {
+                    isEnding: true,
+                    title: "【遗憾结局：现实的重量】",
+                    desc: "你理解了现实的无奈，你们的通信虽已中断，但那份相互理解的温暖将长久留存。有些陪伴，即使短暂也能产生深远的影响。",
+                    relation: "对应项目：【蓝信封书信陪伴】"
+                },
+                ending_good_teacher: {
+                    isEnding: true,
+                    title: "【普通结局：合格的引路人】",
+                    desc: "你是一位尽职尽责的好老师，帮助学生解决了眼前的问题，获得了大家的认可。你完成了任务，但或许错过了与学生建立更深层次连接的机会。",
+                    relation: "通用结局"
+                },
+                ending_missed_opportunity: {
+                    isEnding: true,
+                    title: "【遗憾结局：错过的微光】",
+                    desc: "你看到了孩子眼中的光，却没能将它留住。教育有时就是与时间赛跑，而坚持信念需要更大的勇气。",
+                    relation: "通用结局"
+                },
+                ending_independent_learner: {
+                    isEnding: true,
+                    title: "【隐藏结局：授人以渔】",
+                    desc: "你成功地教会了他如何自己学习，这是一种更长久的陪伴。真正的教育，是让学生在没有你的时候，依然能自信地探索世界。",
+                    relation: "对应项目：【太阳语计划】"
+                }
+            }
+        };
+
+        // --- 游戏状态管理 ---
+        let currentSceneId = 'start';
+        let playerPath = [];
+        let progressSteps = 0;
+
+        // --- DOM 元素获取 ---
+        const titleScreen = document.getElementById('title-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const endingScreen = document.getElementById('ending-screen');
+        const sceneContainer = document.getElementById('scene-container');
+        const choicesContainer = document.getElementById('choices-container');
+        const progressIndicator = document.getElementById('progress-indicator');
+        const endingTitle = document.getElementById('ending-title');
+        const endingDesc = document.getElementById('ending-desc');
+        const endingRelation = document.getElementById('ending-relation');
+
+        const startBtn = document.getElementById('start-btn');
+        const restartBtn = document.getElementById('restart-btn');
+
+        // --- 游戏核心函数 ---
+        function startGame() {
+            titleScreen.classList.add('hidden');
+            endingScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            currentSceneId = 'start';
+            playerPath = [];
+            progressSteps = 0;
+            updateProgressIndicator();
+            renderScene();
+        }
+
+        function updateProgressIndicator() {
+            progressSteps++;
+            progressIndicator.textContent = `第 ${progressSteps} 阶段`;
+        }
+
+        function renderScene() {
+            const scene = gameData.scenes[currentSceneId];
+            sceneContainer.innerHTML = `<p class="text-gray-700">${scene.text}</p>`;
+            choicesContainer.innerHTML = '';
+
+            scene.choices.forEach(choice => {
+                const button = document.createElement('button');
+
+                button.className = 'w-full bg-neutral border-2 border-primary hover:bg-primary/10 text-gray-800 text-left py-3 px-4 rounded-lg transition duration-200';
+                button.innerHTML = `<i class="fa fa-angle-right text-primary mr-2"></i>${choice.text}`;
+                button.onclick = () => makeChoice(choice);
+                choicesContainer.appendChild(button);
+            });
+        }
+
+        function makeChoice(choice) {
+            playerPath.push(choice.path);
+            currentSceneId = choice.next;
+            const nextScene = gameData.scenes[currentSceneId];
+
+            if (nextScene.isEnding) {
+                showEnding(nextScene);
+            } else {
+                updateProgressIndicator();
+                renderScene();
+            }
+        }
+
+        function showEnding(ending) {
+            gameScreen.classList.add('hidden');
+            endingScreen.classList.remove('hidden');
+            endingTitle.textContent = ending.title;
+            endingDesc.textContent = ending.desc;
+            endingRelation.textContent = ending.relation;
+        }
+
+        function restartGame() {
+            startGame();
+        }
+
+        // --- 事件监听 ---
+        startBtn.addEventListener('click', startGame);
+        restartBtn.addEventListener('click', restartGame);
+    </script>
+</body>
+</html>
