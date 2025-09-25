@@ -14,14 +14,14 @@
 ## 📂 文件结构  
 ```
 project/
-│── Guide_Through_the_Galaxy.html       # 游戏完整代码
+│── index.html       # 游戏完整代码
 │── README.md        # 项目说明文档（本文件）
 ```
 
 ---
 
 ## 🚀 使用方法  
-1. 下载 `Guide_Through_the_Galaxy.html` 文件。  
+1. 下载 `index.html` 文件。  
 2. 使用浏览器打开（推荐 Chrome / Edge / 微信内置浏览器 / Safari）。  
 3. 点击 **“开始游戏”** 按钮进入剧情，根据提示进行选择。  
 4. 游戏结束后，点击 **“保存结果图片”** 按钮保存结局卡片。  
